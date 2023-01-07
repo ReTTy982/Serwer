@@ -33,7 +33,7 @@ def register(response):
 @csrf_exempt
 def my_register(request):
     if request.method == 'POST':
-        params = request.POST
+        params = request.body
         print(params)
         user = User.objects.create_user(
             username=params.get('username'),
