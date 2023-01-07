@@ -56,7 +56,7 @@ class Librarian(models.Model):
 
 
 class Publisher(models.Model):
-    publisher_name = models.CharField(max_length=100)
+    publisher_name = models.CharField(primary_key=True,max_length=100)
     phone_number = models.CharField(max_length=30,unique=True)
     class Meta:
         db_table = 'Publisher'
