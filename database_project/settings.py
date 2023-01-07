@@ -79,7 +79,7 @@ DATABASES = {
         'NAME': 'wypozyczalnia',
         'USER': 'root',
         'PASSWORD': 'Polekpacz1998$',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '3306',
     }
 }
