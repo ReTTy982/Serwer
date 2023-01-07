@@ -34,6 +34,7 @@ def register(response):
 def my_register(request):
     if request.method == 'POST':
         params = request.POST
+        print(params)
         user = User.objects.create_user(
             username=params.get('username'),
             password=params.get('password')
