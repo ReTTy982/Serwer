@@ -33,8 +33,8 @@ def register(response):
 @csrf_exempt
 def my_register(request):
     if request.method == 'POST':
-        params = request.body
-        print(params)
+        params = request.POST
+        #__import__('pdb').set_trace()
         user = User.objects.create_user(
             username=params.get('username'),
             password=params.get('password')
