@@ -81,5 +81,8 @@ class Author(models.Model):
     author_name = models.CharField(max_length=255)
     class Meta:
         db_table = 'Author'
+
+class Test(models.Model):
+    it = models.IntegerField(primary_key=True)
     
 
