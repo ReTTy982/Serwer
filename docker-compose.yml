@@ -10,7 +10,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: Polekpacz1998$
+      MYSQL_ROOT_PASSWORD: Polekpacz1998$$
       MYSQL_DATABASE: wypozyczalnia
     volumes:
       - ./mysql_data:/var/lib/mysql
