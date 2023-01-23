@@ -1,6 +1,6 @@
 from django.db import models
 
-"""
+
 class Publisher(models.Model):
     id = models.BigAutoField(primary_key=True)
     publisher_name = models.CharField(max_length=100)
@@ -9,7 +9,7 @@ class Publisher(models.Model):
         db_table = 'Publisher'
         """
     
-"""
+
 class Book(models.Model):
     #book_id = models.AutoField(primary_key=True)
     book_title = models.CharField(max_length=200)
