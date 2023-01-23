@@ -1,5 +1,5 @@
 from django.db import models
-
+"""
 
 class Publisher(models.Model):
     publisher_name = models.CharField(max_length=100)
@@ -87,4 +87,4 @@ class Author(models.Model):
         db_table = 'Author'
     
 
-
+"""
