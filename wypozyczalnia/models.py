@@ -1,6 +1,6 @@
 from django.db import models
 
-
+"""
 class Publisher(models.Model):
     publisher_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=30,unique=True)
@@ -88,3 +88,4 @@ class Author(models.Model):
     
 
 
+"""
