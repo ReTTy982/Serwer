@@ -7,7 +7,6 @@ class Publisher(models.Model):
     class Meta:
         db_table = 'Publisher'
     
-"""
 class Book(models.Model):
     #book_id = models.AutoField(primary_key=True)
     book_title = models.CharField(max_length=200)
@@ -64,9 +63,6 @@ class Librarian(models.Model):
     
 
 
-
-
-
 class LibraryUser(models.Model):
     user_id = models.IntegerField(primary_key=True)
     first_name = models.CharField(max_length=30)
@@ -87,5 +83,3 @@ class Author(models.Model):
         db_table = 'Author'
     
 
-
-"""
