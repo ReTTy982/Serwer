@@ -1,0 +1,13 @@
+{% block title %}
+Login Here
+{% endblock %}
+
+
+
+{% block content %}
+<form method ="post" class="from-group">
+    {%csrf_token%}
+    {{form}}
+    <button type="submit" class="btn btn-succes">Login</button>
+</form>
+{% endblock %}
