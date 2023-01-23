@@ -1,5 +1,5 @@
 from django.db import models
-"""
+
 
 class Publisher(models.Model):
     publisher_name = models.CharField(max_length=100,primary_key=True)
@@ -86,4 +86,3 @@ class Test(models.Model):
     it = models.IntegerField(primary_key=True)
     
 
-"""
