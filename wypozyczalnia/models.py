@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Book(models.Model):
-    book_id = models.AutoField(primary_key=True)
+    #book_id = models.AutoField(primary_key=True)
     book_title = models.CharField(max_length=200)
     publisher_name = models.ForeignKey('Publisher',on_delete=models.CASCADE)
     author_id = models.ForeignKey('Author', on_delete=models.CASCADE)
