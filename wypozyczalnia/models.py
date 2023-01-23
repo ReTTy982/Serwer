@@ -1,6 +1,13 @@
 from django.db import models
 
 
+class Publisher(models.Model):
+    publisher_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=30,unique=True)
+    class Meta:
+        db_table = 'Publisher'
+    
+"""
 class Book(models.Model):
     #book_id = models.AutoField(primary_key=True)
     book_title = models.CharField(max_length=200)
@@ -57,12 +64,7 @@ class Librarian(models.Model):
     
 
 
-class Publisher(models.Model):
-    publisher_name = models.CharField(primary_key=True,max_length=100)
-    phone_number = models.CharField(max_length=30,unique=True)
-    class Meta:
-        db_table = 'Publisher'
-    
+
 
 
 class LibraryUser(models.Model):
@@ -85,4 +87,4 @@ class Author(models.Model):
         db_table = 'Author'
     
 
-
+"""
