@@ -62,17 +62,27 @@ def my_register(request):
 def my_login(request):
     if request.method == 'POST':
         params = request.headers["Authorization"].split(" ")
+        print(params)
         text = params[1]
         
         encoded =base64.urlsafe_b64decode(text)
         x = encoded.decode('UTF-8')
-        print(x.split(':'))
-        print(x[1])
+        print(x)
+        x = x.split(':')
+        username = x[1]
+        password = x[0]
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            print(user)
+            login(request,user)
+            print("TAK")
+            print(request.session)
+        #print(x[1])
         
         
         #user= authenticate(username=encoded[0],password=encoded[1])
         #print(user)
-    return HttpResponse("OK")
+    return HttpResponse(request.session)
 
 def populate(request):
     
@@ -173,7 +183,37 @@ def populate(request):
         else:
             end_time = datetime.datetime.now() + datetime.timedelta(60)
 
-        BookIssue.objects.create(copy=good_copy,branch=branch,card_number=user,date_issue=start_time.date(),date_due=end_time.date(),librarian=librarian)
+        BookIssue.objects.create(copy=good_copy,branch=branch,library_user=user,date_issue=start_time.date(),date_due=end_time.date(),librarian=librarian)
         
 
     return HttpResponse()
+
+def issue_book(request):
+    if request.method == 'POST':
+        pass
+@csrf_exempt
+def search_book(request):
+    if request.method == 'POST':
+        print(BookCopy.objects.filter(branch=request.POST.get('branch')).values())
+        return HttpResponse(BookCopy.objects.filter(branch=request.POST.get('branch')).values())
+    else:
+        return HttpRequest("Zly request")
+
+
+@csrf_exempt
+def search_my_books(request):
+    if request.user.is_authenticated:
+        user = LibraryUser.objects.get(login = request.user)
+        borrowed_books = BookIssue.objects.filter(library_user=user.id)
+        response = {"book_title":[],"branch":[],"date_issue":[],"date_due":[]}
+        for i in range(len(borrowed_books)):
+            print(borrowed_books[i].copy.book.book_title)
+            response["book_title"].append(borrowed_books[i].copy.book.book_title)
+            response["branch"].append(borrowed_books[i].branch.id)
+            response["date_issue"].append(borrowed_books[i].date_issue.date())
+            response["date_due"].append(borrowed_books[i].date_due.date())
+      
+    return JsonResponse(response)
+
+
+

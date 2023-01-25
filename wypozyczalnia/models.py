@@ -34,7 +34,7 @@ class BookIssue(models.Model):
     #book_issue_id = models.IntegerField(primary_key=True)
     copy = models.ForeignKey('BookCopy',on_delete=models.CASCADE)
     branch = models.ForeignKey('Branch', on_delete=models.CASCADE)
-    card_number = models.ForeignKey('LibraryUser', on_delete=models.CASCADE)
+    library_user = models.ForeignKey('LibraryUser', on_delete=models.CASCADE)
     date_issue = models.DateTimeField()
     date_due = models.DateTimeField()
     librarian = models.ForeignKey('Librarian', on_delete=models.CASCADE)
