@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 django = "*"
 mysqlclient = "*"
+markdown = "*"
+djangorestframework = "*"
+djangorestframework-queryfields = "*"
 
 [dev-packages]
 

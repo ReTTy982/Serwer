@@ -15,8 +15,7 @@ class Book(models.Model):
     category = models.CharField(max_length=100)
     class Meta:
         db_table = 'Book'
-    def __str__(self):
-        return f"{self.book_title}, {self.author_id.author_name}"
+
 
     
 

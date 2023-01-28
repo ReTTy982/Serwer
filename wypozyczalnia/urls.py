@@ -9,4 +9,5 @@ urlpatterns = [
     path("populate",views.populate), # Only use once for populating database
     path("search_book",views.search_book), # Search books in branch
     path("search_my_books",views.search_my_books), # Search books of user
+    path("author",views.author),
     ]
