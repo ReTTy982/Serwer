@@ -11,6 +11,7 @@ djangorestframework = "*"
 djangorestframework-queryfields = "*"
 
 [dev-packages]
+yapf = "*"
 
 [requires]
 python_version = "3.11"

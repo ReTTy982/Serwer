@@ -37,6 +37,7 @@ class BookIssue(models.Model):
     date_issue = models.DateTimeField()
     date_due = models.DateTimeField()
     librarian = models.ForeignKey('Librarian', on_delete=models.CASCADE)
+    returned = models.BooleanField(default=False)
     class Meta:
         db_table = 'BookIssue'
 

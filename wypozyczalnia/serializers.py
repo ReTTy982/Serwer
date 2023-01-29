@@ -37,13 +37,52 @@ class AuthorSerializer(DynamicFieldsModelSerializer):
         fields = ['id','author_name']
 
 class PublisherSerializer(DynamicFieldsModelSerializer):
-    publisher_name = serializers.CharField(max_length=100)
-    phone_number = serializers.CharField(max_length=30)
+    class Meta:
+        model = Publisher
+        fields = ['publisher_name','phone_number']
 
-    def create(self, validated_data):
-        return Publisher.objects.create(**validated_data)
+class BookCopySerializer(DynamicFieldsModelSerializer):
+    book = serializers.SlugRelatedField(read_only=True,slug_field='book_title')
+    branch = serializers.SlugRelatedField(read_only=True,slug_field='branch_address')
+    author = serializers.SerializerMethodField("get_author")
+    publisher = serializers.SerializerMethodField("get_publisher")
+    
+    
+    class Meta:
+        model = BookCopy
+        fields = ['id','book','author','publisher','branch','copy_status',]
 
-    def update(self, instance, validated_data):
-        instance.publisher_name = validated_data.get('publisher_name',instance.publisher_name)
-        instance.phone_number = validated_data.get('phone_number',instance.phone_number)
+    # def create(self,validated_data):
+    #     print(f"KEK{validated_data}")
+    #     book = Book.objects.get(validated_data['book_id'])
+    #     branch = Branch.objects.get(validated_data['branch_id'])
+    #     return BookCopy.objects.create(book=book,branch=branch)
 
+    def get_author(self,obj):
+        return obj.book.author.author_name
+    def get_publisher(self,obj):
+        return obj.book.publisher_name.publisher_name
+
+
+class BookIssueSerializer(DynamicFieldsModelSerializer):
+    branch = serializers.SlugRelatedField(read_only=True,slug_field='branch_address')
+    library_user = serializers.SlugRelatedField(read_only=True,slug_field='card_number')
+    class Meta:
+        model = BookIssue
+        fields = ['id','copy','branch','library_user','date_issue','date_due','librarian','returned']
+
+class BranchSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Branch
+        fields = ['id','branch_address']
+
+class LibrarianSerializer(DynamicFieldsModelSerializer):
+    branch = serializers.SlugRelatedField(read_only=True,slug_field='branch_address')
+    class Meta:
+        model = Librarian
+        fields = ['id','login','password','branch','first_name','last_name']
+
+class LibraryUserSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = LibraryUser
+        fields = ['id','first_name','last_name','card_number','login','password','address','phone_number']

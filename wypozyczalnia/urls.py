@@ -10,4 +10,9 @@ urlpatterns = [
     path("search_book",views.search_book), # Search books in branch
     path("search_my_books",views.search_my_books), # Search books of user
     path("author",views.author),
+    path('book_copies',views.book_copies),
+    path('books',views.books),
+    path('authors',views.authors),
+    path('issue_book',views.issue_book),
+    path('library_user',views.library_user),
     ]

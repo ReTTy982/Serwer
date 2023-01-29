@@ -14,6 +14,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from wypozyczalnia.serializers import *
+from django.db.models import Q
 
 # Create your views here.
 
@@ -238,9 +239,146 @@ def author(request):
 @api_view(['GET','POST'])
 def book_copies(request):
     if request.method == 'POST':
-        pass
+        params = request.data.dict()
+        try:
+            book = Book.objects.get(id=params['book_id'])
+            branch = Branch.objects.get(id=params['branch_id'])
+            copy = BookCopy.objects.create(book=book, branch=branch)
+        except ValueError as e:
+            return Response(status=400)
+        
+        serializer = BookCopySerializer(copy)
+        return Response(serializer.data)
+        
     elif request.method == 'GET':
-        pass
+        if len(request.data) == 0:
+            return Response(status=400)
+
+        q_object = Q()
+        params = request.data.dict()
+        for key,value in params.items():
+            if key == 'author_name':
+                q_object.add(Q(book__author__author_name__contains = value),Q.AND)
+            else:
+                q_object.add(Q(**{key: value}),Q.AND)
+        copies = BookCopy.objects.filter(q_object)
+
+        serializer = BookCopySerializer(copies,many=True)        
+        return Response(serializer.data)
+
+@api_view(['GET','POST'])
+def books(request):
+    if request.method == 'GET':
+        params = request.data.dict()
+        q_object =Q()
+        for key,value in params.items():
+            if key == 'category':
+                q_object.add(Q(category__icontains=value),Q.AND)
+            else:  
+                q_object.add(Q(**{key:value}),Q.AND)
+        books = Book.objects.filter(q_object)
+        serializer = BookSerializer(books,many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        params = request.data.dict()
+        try:
+            author = Author.objects.get(id=params['author'])
+            publisher = Publisher.objects.get(publisher_name=params['publisher_name'])
+            book = Book.objects.create(book_title=params['book_title'],category=params['category'],author=author,publisher_name=publisher)
+        except ValueError as e:
+            return Response(status=400)
+        
+        serializer = BookSerializer(book)
+        return Response(status=201)
+    else:
+        return Response(status=400)
+@api_view(['GET','POST'])
+def authors(request):
+    if len(request.data) == 0:
+            return Response(status=400)
+    params = request.data.dict()
+    if request.method == 'POST':
+        try:
+            author = Author.objects.create(author_name=params['author_name'])
+        except ValueError:
+            return Response(status=400)
+        return Response(status=201)
+    elif request.method == 'GET':
+        author = Author.objects.get(**params)
+        serializer = AuthorSerializer(author)
+        return Response(serializer.data)
+
+
+@api_view(['GET','POST'])       
+def issue_book(request):
+    if len(request.data) == 0:
+        return Response(status=400)
+    params = request.data.dict()
+    if request.method == 'POST':
+        try:
+            if params['operation'] == 'wypozycz':
+                copy = BookCopy.objects.get(id=params['copy'])
+                if copy.copy_status == 'na stanie':
+                    library_user = LibraryUser.objects.get(id=params['library_user'])
+                    date_issue = params['date_issue']
+                    date_due = params['date_due']
+                    branch = copy.branch
+                    librarian = Librarian.objects.get(branch=branch)
+                    book_issue = BookIssue.objects.create(copy=copy,library_user=library_user,branch=branch,date_issue=date_issue,date_due=date_due,librarian=librarian)
+                    copy.copy_status = 'wypozyczonne'
+                    copy.save()
+                    return Response(status=200)
+                else:
+                    return Response(status=400)
+            elif params['operation'] == 'oddaj':
+                book_issue = BookIssue.objects.get(id=params['id'])
+                if book_issue.returned == False:
+                    print(book_issue.id)
+                    copy = book_issue.copy
+                    print(copy.id)
+                    copy.copy_status = 'na stanie'
+                    book_issue.returned = True
+                    book_issue.save()
+                    copy.save()
+                    return Response(status=200)
+                else: return Response(status=400)
+        except ValueError:
+            return Response(status=400)
+    if request.method == 'GET':
+        params = request.data.dict()
+        try:
+            library_user = LibraryUser.objects.get(id=params['user_id'])
+        except ValueError as e:
+            return Response(status=400)
+        issues = BookIssue.objects.filter(library_user=library_user)
+        serializer = BookIssueSerializer(issues,many=True)
+        return Response(serializer.data)  
+@api_view(['GET','POST'])       
+def library_user(request):
+    if len(request.data) == 0:
+        return Response(status=400)
+    if request.method == 'GET':
+        q_object = Q()
+        params = request.data.dict()
+        for key,value in params.items():
+            q_object.add(Q(**{key: value}),Q.AND)
+        library_users = LibraryUser.objects.filter(q_object)
+
+        serializer = LibraryUserSerializer(library_users,many=True)    
+        return Response(serializer.data)
+    if request.method == 'POST':
+        params = request.data.dict()
+        users = LibraryUser.objects.all()
+        card_serializer = LibraryUserSerializer(users,many=True,fields=('card_number',))
+        numbers= []
+        for i in range(10000,99999):
+            numbers.append(i)
+        for i in card_serializer.data:
+            numbers.remove(i['card_number'])
+        card_number =numbers[0]
+        LibraryUser.objects.create(**params,card_number=card_number)
+        return Response(status=200)
+
 
 
 

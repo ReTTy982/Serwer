@@ -1,0 +1,61 @@
+wypozyczalnia/book_copies
+GET:
+    Takes : {book_id : int, branch_id : int, copy_status: str}
+    copy_status = 'na stanie' , 'wypozyczone'
+    Returns: 
+        {
+            "id": 10008,
+            "book": "Promise, The (Versprechen, Das)",
+            "author": "Frazer Sawden",
+            "publisher": "Morissette, Balistreri and Mitchell",
+            "branch": "10063,Walton,Trail",
+            "copy_status": "na stanie"
+        }
+
+POST:
+    Takes: {book_id : int, branch_id:int}
+    Returns: status=201 || status=400
+
+
+wypozyczalnia/books
+GET: 
+    Takes: {book_title : str,  publisher_name: str, author: int ,category: str}
+    Returns:
+        {
+        "id": 502,
+        "book_title": "testowanie",
+        "publisher_name": "Mohr Group",
+        "author": "Oates Beckford",
+        "category": "testing"
+        }
+POST:
+    Takes: {author: int, publisher_name :str, book_title: str, category: str}
+    Returns: status 201 || status 400
+
+wypozyczalnia/authors
+GET:
+    Takes {author_name : str}
+    Returns:
+    {
+    "id": 3,
+    "author_name": "Ad Spurgeon"
+    }
+POST:
+    Takes {author_name : str}
+    Return 201 || 400
+
+wypozyczalnia/issue_book
+GET:
+    Takes: {user_id : int, }
+POST:
+    Operation: wypozycz
+        Takes: {operation: str,copy:int,library_user:int,date_issue: date, date_due: date}
+    Operation: oddaj:
+        Takes: {operation: str, id : int}
+    operation: 'wypozycz' || 'oddaj'
+
+wypozyczalnia/library_user:
+GET:
+    TAkes: to co w tabelach
+POST: wszystko poza numerem karty
+
