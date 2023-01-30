@@ -225,7 +225,7 @@ def search_my_books(request):
 def author(request):
     if request.method == 'GET':
         #books = Book.objects.filter(author__author_name__contains='Conny Harcarse')
-        param = request.data.__getitem__('author_name')
+        param = request.query_params.dict().__getitem__('author_name')
         books = Book.objects.filter(author__author_name__contains=param)
         serializer = BookSerializer(books,many=True)
         return Response(serializer.data)
@@ -251,11 +251,11 @@ def book_copies(request):
         return Response(serializer.data)
         
     elif request.method == 'GET':
-        if len(request.data) == 0:
+        if len(request.query_params) == 0:
             return Response(status=400)
 
         q_object = Q()
-        params = request.data.dict()
+        params = request.query_params.dict()
         for key,value in params.items():
             if key == 'author_name':
                 q_object.add(Q(book__author__author_name__contains = value),Q.AND)
@@ -269,7 +269,7 @@ def book_copies(request):
 @api_view(['GET','POST'])
 def books(request):
     if request.method == 'GET':
-        params = request.data.dict()
+        params = request.query_params.dict()
         q_object =Q()
         for key,value in params.items():
             if key == 'category':
@@ -294,16 +294,21 @@ def books(request):
         return Response(status=400)
 @api_view(['GET','POST'])
 def authors(request):
-    if len(request.data) == 0:
-            return Response(status=400)
-    params = request.data.dict()
+    
+    
     if request.method == 'POST':
+        if len(request.data) == 0:
+            return Response(status=400)
+        params = request.data.dict()
         try:
             author = Author.objects.create(author_name=params['author_name'])
         except ValueError:
             return Response(status=400)
         return Response(status=201)
     elif request.method == 'GET':
+        if len(request.query_params) == 0:
+            return Response(status=400)
+        params = request.query_params.dict()
         author = Author.objects.get(**params)
         serializer = AuthorSerializer(author)
         return Response(serializer.data)
@@ -311,10 +316,11 @@ def authors(request):
 
 @api_view(['GET','POST'])       
 def issue_book(request):
-    if len(request.data) == 0:
-        return Response(status=400)
-    params = request.data.dict()
+    
     if request.method == 'POST':
+        if len(request.data) == 0:
+            return Response(status=400)
+        params = request.data.dict()
         try:
             if params['operation'] == 'wypozycz':
                 copy = BookCopy.objects.get(id=params['copy'])
@@ -345,7 +351,9 @@ def issue_book(request):
         except ValueError:
             return Response(status=400)
     if request.method == 'GET':
-        params = request.data.dict()
+        if len(request.query_params) == 0:
+            return Response(status=400)
+        params = request.query_params.dict()
         try:
             library_user = LibraryUser.objects.get(id=params['user_id'])
         except ValueError as e:
@@ -353,13 +361,16 @@ def issue_book(request):
         issues = BookIssue.objects.filter(library_user=library_user)
         serializer = BookIssueSerializer(issues,many=True)
         return Response(serializer.data)  
+
+
 @api_view(['GET','POST'])       
 def library_user(request):
-    if len(request.data) == 0:
-        return Response(status=400)
+    
     if request.method == 'GET':
+        if len(request.query_params) == 0:
+            return Response(status=400)
         q_object = Q()
-        params = request.data.dict()
+        params = request.query_params.dict()
         for key,value in params.items():
             q_object.add(Q(**{key: value}),Q.AND)
         library_users = LibraryUser.objects.filter(q_object)
@@ -367,6 +378,8 @@ def library_user(request):
         serializer = LibraryUserSerializer(library_users,many=True)    
         return Response(serializer.data)
     if request.method == 'POST':
+        if len(request.data) == 0:
+            return Response(status=400)
         params = request.data.dict()
         users = LibraryUser.objects.all()
         card_serializer = LibraryUserSerializer(users,many=True,fields=('card_number',))
