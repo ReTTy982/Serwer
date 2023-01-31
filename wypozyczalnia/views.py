@@ -380,7 +380,7 @@ def library_user(request):
     if request.method == 'POST':
         if len(request.data) == 0:
             return Response(status=400)
-        params = request.data.dict()
+        params = request.data
         users = LibraryUser.objects.all()
         card_serializer = LibraryUserSerializer(users,many=True,fields=('card_number',))
         numbers= []
