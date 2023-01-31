@@ -327,6 +327,8 @@ def issue_book(request):
                 if copy.copy_status == 'na stanie':
                     library_user = LibraryUser.objects.get(id=params['library_user'])
                     date_issue = params['date_issue']
+                    print(type(date_issue))
+                    print(date_issue)
                     date_due = params['date_due']
                     branch = copy.branch
                     librarian = Librarian.objects.get(branch=branch)
