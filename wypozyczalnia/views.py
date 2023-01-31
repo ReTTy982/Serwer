@@ -320,7 +320,7 @@ def issue_book(request):
     if request.method == 'POST':
         if len(request.data) == 0:
             return Response(status=400)
-        params = request.data.dict()
+        params = request.data
         try:
             if params['operation'] == 'wypozycz':
                 copy = BookCopy.objects.get(id=params['copy'])
@@ -353,7 +353,7 @@ def issue_book(request):
     if request.method == 'GET':
         if len(request.query_params) == 0:
             return Response(status=400)
-        params = request.query_params.dict()
+        params = request.query_params
         try:
             library_user = LibraryUser.objects.get(id=params['user_id'])
         except ValueError as e:
