@@ -352,7 +352,6 @@ def authors(request):
             author.save()
             return Response(status=201)
         except( ValueError, TypeError, FieldError, ObjectDoesNotExist, ValidationError) as e:
-            print(e)
             return Response(status=400,data=repr(e))
         
     elif request.method == 'GET':
@@ -417,7 +416,9 @@ def issue_book(request):
             return Response(status=400,data=repr(e))
     if request.method == 'GET':
         if len(request.query_params) == 0:
-            return Response(status=400)
+            issues = BookIssue.objects.all()
+            serializer  = BookIssueSerializer(issues,many=True)
+            return Response(serializer.data)
         
         try:
             params = request.query_params
