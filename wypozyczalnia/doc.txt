@@ -1,6 +1,8 @@
+*opcjonalny
+
 wypozyczalnia/book_copies
 GET:
-    Takes : {book_id : int, branch_id : int, copy_status: str}
+    Takes : {*book_id : int, *branch_id : int, *copy_status: str, *author_name:str, *id:int}
     copy_status = 'na stanie' , 'wypozyczone'
     Returns: 
         {

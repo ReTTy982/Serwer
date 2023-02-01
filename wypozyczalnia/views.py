@@ -17,6 +17,8 @@ from wypozyczalnia.serializers import *
 from django.db.models import Q
 from django.core.exceptions import FieldError
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError
+
 
 # Create your views here.
 
@@ -266,18 +268,19 @@ def book_copies(request):
                 serializer = BookCopySerializer(copy)
                 copy.delete()
                 return Response(serializer.data)
-            except( ValueError, TypeError, FieldError, ObjectDoesNotExist) as e:
+            except( ValueError, TypeError, FieldError, ObjectDoesNotExist,ValidationError) as e:
                 return Response(status=400, data=repr(e))
         try:
             params = request.data
-            print("TEST2")
             book = Book.objects.get(id=params['book_id'])
             branch = Branch.objects.get(id=params['branch_id'])
-            copy = BookCopy.objects.create(book=book, branch=branch)
+            copy = BookCopy(book=book, branch=branch)
+            copy.full_clean()
+            copy.save()
 
             serializer = BookCopySerializer(copy)
             return Response(serializer.data)
-        except( ValueError, TypeError, FieldError, ObjectDoesNotExist) as e:
+        except( ValueError, TypeError, FieldError, ObjectDoesNotExist,ValidationError) as e:
             return Response(status=400, data=repr(e))
 
     elif request.method == 'GET':
@@ -324,28 +327,32 @@ def books(request):
             author = Author.objects.get(id=params['author'])
             publisher = Publisher.objects.get(
                 publisher_name=params['publisher_name'])
-            book = Book.objects.create(book_title=params['book_title'],
+            book = Book(book_title=params['book_title'],
                                        category=params['category'],
                                        author=author,
                                        publisher_name=publisher)
+            book.full_clean()
+            book.save()
             serializer = BookSerializer(book)
             return Response(status=201,data=serializer.data)
-        except( ValueError, TypeError, FieldError, ObjectDoesNotExist) as e:
+        except( ValueError, TypeError, FieldError, ObjectDoesNotExist,ValidationError) as e:
             return Response(status=400,data=repr(e))
 
 
 @api_view(['GET', 'POST'])
 def authors(request):
-
     if request.method == 'POST':
         if len(request.data) == 0:
             return Response(status=400)
         
         try:
             params = request.data
-            author = Author.objects.create(author_name=params['author_name'])
+            author = Author(author_name=params['author_name'])
+            author.full_clean()
+            author.save()
             return Response(status=201)
-        except( ValueError, TypeError, FieldError, ObjectDoesNotExist) as e:
+        except( ValueError, TypeError, FieldError, ObjectDoesNotExist, ValidationError) as e:
+            print(e)
             return Response(status=400,data=repr(e))
         
     elif request.method == 'GET':
@@ -375,19 +382,20 @@ def issue_book(request):
                     library_user = LibraryUser.objects.get(
                         id=params['library_user'])
                     date_issue = params['date_issue']
-                    print(type(date_issue))
-                    print(date_issue)
                     date_due = params['date_due']
                     branch = copy.branch
                     librarian = Librarian.objects.get(branch=branch)
-                    book_issue = BookIssue.objects.create(
+                    book_issue = BookIssue(
                         copy=copy,
                         library_user=library_user,
                         branch=branch,
                         date_issue=date_issue,
                         date_due=date_due,
                         librarian=librarian)
+                    book_issue.full_clean()
+                    book_issue.save()
                     copy.copy_status = 'wypozyczonne'
+                    copy.full_clean()
                     copy.save()
                     return Response(status=200)
                 else:
@@ -405,7 +413,7 @@ def issue_book(request):
                     return Response(status=200)
                 else:
                     return Response(status=400)
-        except( ValueError, TypeError, FieldError) as e:
+        except( ValueError, TypeError, FieldError,ValidationError) as e:
             return Response(status=400,data=repr(e))
     if request.method == 'GET':
         if len(request.query_params) == 0:
@@ -454,7 +462,9 @@ def library_user(request):
             for i in card_serializer.data:
                 numbers.remove(i['card_number'])
             card_number = numbers[0]
-            LibraryUser.objects.create(**params, card_number=card_number)
+            user = LibraryUser(**params, card_number=card_number)
+            user.full_clean()
+            user.save()
             return Response(status=200)
         except( ValueError, TypeError, FieldError) as e:
             return Response(status=400,data=repr(e))
